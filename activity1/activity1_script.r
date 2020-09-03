@@ -23,11 +23,7 @@ b*5
 b/5
 
 # Calculation 3 (vector operations)
-# vector with 4 numbers 
+# vector with 4 numbers & variable name
 j <- c(16,25,92,100)
 # divide all numbers by 4 
 j/4
-
-# Extra Calculation
-# divide my number (variable name) by vector
-b/j
