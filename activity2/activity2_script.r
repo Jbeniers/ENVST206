@@ -57,8 +57,9 @@ vec_num <- c(1.0,2.1,3.2,4.3,5.4)
 # example integer vector 
 vec_int <- c(6,7,8,9,10)
 
-# example factor vector ???
-# vec_fac <- 
+# example factor vector
+vec_fac <- factor(c("hockey", "baseball", "football", "soccer", "basketball"));
+vec_fac 
 
 ## Descriptive Statistics and Histograms ##
 # find out all unique site names
