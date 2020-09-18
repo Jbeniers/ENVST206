@@ -38,6 +38,15 @@ datI <- read.csv("/Users/JonBeniers/Desktop/ENVST206/Activity 3 Data/insect_rich
 datI$urbanName <- as.factor(datI$urbanName)
 
 ## Question 4 ## (Answered in my word doc.)
+# Anova assumption for normally distributed
+shapiro.test(datI$Richness[datI$urbanName == "Dense"])
+shapiro.test(datI$Richness[datI$urbanName == "Suburban"])
+shapiro.test(datI$Richness[datI$urbanName == "Developed"])
+shapiro.test(datI$Richness[datI$urbanName == "Natural"])
+
+# Anova assumption for distributions having equal variances
+bartlett.test(datI$Richness ~ datI$urbanName)
+
 ## Question 5 ## (Answered in my word doc. using the provided boxplots)
 
 # specify model for species richness and urban type
