@@ -15,11 +15,12 @@ library(lubridate)
 ## CUGIR - Agricultural Districts, Oneida County NY, 2019 ##
 CUGIR <- readOGR("/Users/JonBeniers/Desktop/ENVST206/Final Project Data/cugir-007975/agONEI2019.shp")
 
-plot(CUGIR)
+# Was not used but could be in future code - I went with the pdf mapping instead
+# plot(CUGIR)
 
 ## U.S. Drought Monitor drought threshold data 2000-2020 ##
-# D0 - Abnormally Dry (23 instances)
-# D1 - Moderate Drought (7 instances)
+# D0 - Abnormally Dry (23 instances of at least 2 weeks of consecutive drought)
+# D1 - Moderate Drought (7 instances of at least 2 weeks of consecutive drought)
 # D2 - Severe Drought (0 instances)
 # D3 - Extreme Drought (0 instances)
 # D4 - Exceptional Drought (0 instances) 
@@ -33,12 +34,15 @@ NYDroughtD4 <- read.csv("/Users/JonBeniers/Desktop/ENVST206/Final Project Data/d
 ## Oneida County in NYDroughtD0 ##
 D0_Oneida <- NYDroughtD0[NYDroughtD0$County == "Oneida County", ]
 
+# altering data format for easily legibility in R
 D0_Oneida$startD <- as.Date(D0_Oneida$StartDate,"%Y-%m-%d")
+# broken down by year
 D0_Oneida$Year <- year(D0_Oneida$StartDate)
+# broken down by DOY (more specific)
 D0_Oneida$DOY <- yday(D0_Oneida$StartDate)
 
 # leap year = true
-# use for regression
+# will be used to run regression
 D0_Oneida$DD <- D0_Oneida$Year+ ((D0_Oneida$DOY - 1) / ifelse(leap_year(D0_Oneida$Year),366, 365))
 
 ## Drought Threshold D0 - Abnormally Dry ##
@@ -48,15 +52,14 @@ ggplot(data = D0_Oneida, aes(x=startD,y=ConsecutiveWeeks))+# data for plot
         labs(x="Date of Drought Experienced", y="# of Consecutive Weeks in Abnormally Dry for Oneida")
         
 ## setting up regression for Drought Threshold D0 ##
+# DDC, "c" stands for centering with year 2000 being 0
 D0_Oneida$DDC <- (D0_Oneida$DD - 2000)
 NYD0.mod <- lm(D0_Oneida$ConsecutiveWeeks ~ D0_Oneida$DDC)
-
-summary(NYD0.mod)
 
 # standardized residuals
 NYD0.res <- rstandard(NYD0.mod)
 
-## checking assumptions ##
+## Checking Assumptions ##
 ## NOTE: Assumptions -> residuals are normally distributed & equal variances ##
 # set up qq plot
 qqnorm(NYD0.res)
@@ -74,7 +77,7 @@ abline(h=0)
 ## Interpreting results ##
 summary(NYD0.mod)
 
-# make plot drought threshold D0 and consecutive weeks of drought observed
+# linear regression for drought threshold D0 and consecutive weeks of drought observed
 plot(D0_Oneida$DDC, D0_Oneida$ConsecutiveWeeks, 
      pch = 19, 
      col = "royalblue4",
@@ -105,7 +108,6 @@ ggplot(data = D1_Oneida, aes(x=startD,y=ConsecutiveWeeks))+# data for plot
         geom_point()+ # make points at data point
         labs(x="Date of Drought Experienced", y="# of Consecutive Weeks in Moderate Drought for Oneida")
 
-
 ## setting up regression for Drought Threshold D1 ##
 D1_Oneida$DDC <- (D1_Oneida$DD - 2000)
 NYD1.mod <- lm(D1_Oneida$ConsecutiveWeeks ~ D1_Oneida$DDC)
@@ -129,7 +131,6 @@ plot(D1_Oneida$DDC, NYD1.res,
      ylab = "standardized residual")
 # add a horizontal line at zero
 abline(h=0)
-
 
 ## Interpreting results ##
 summary(NYD1.mod)
