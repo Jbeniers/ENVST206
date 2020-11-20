@@ -2,7 +2,7 @@
 
 ## Simple linear regression: Are beavers flooding the Arctic? ##
 
-datB <- read.csv("/Users/JonBeniers/Desktop/ENVST206/Activity 4 Data/beaver_dam.csv")
+datB <- read.csv("/Users/JonBeniers/Desktop/ENVST206/Activity Data/Activity 4 Data/beaver_dam.csv")
 head(datB)
 
 plot(datB$dams.n, datB$area.h, 
