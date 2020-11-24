@@ -1,5 +1,5 @@
 ## Jon Beniers ##
-## 11/20/20 ##
+## 11/24/20 ##
 ## Final Project ##
 ## Analyzing the Effects of Drought: ##
 ## A Time Series Analysis of Agricultural Lands in Oneida County via Geospatial and Drought Data ##
@@ -78,15 +78,14 @@ abline(h=0)
 summary(NYD0.mod)
 
 # linear regression for drought threshold D0 and consecutive weeks of drought observed
-plot(D0_Oneida$DDC, D0_Oneida$ConsecutiveWeeks, 
-     pch = 19, 
-     col = "royalblue4",
+plot(D0_Oneida$DDC, D0_Oneida$ConsecutiveWeeks,
+     pch = 17, 
+     col = "dodgerblue3",
      ylab = "# of Consecutive Weeks in Abnormally Dry for Oneida",
      xlab =  "Date of Drought Experienced (2000-2020)")
 # add regression line
 # make line width thicker
 abline(NYD0.mod, lwd=2)
-
 
 
 ##### TEST 2 #####
@@ -144,3 +143,63 @@ plot(D1_Oneida$DDC, D1_Oneida$ConsecutiveWeeks,
 # add regression line
 # make line width thicker
 abline(NYD0.mod, lwd=2)
+
+
+
+##### TEST 3 #####
+## All County's in NYDroughtD0 ##
+D0_NY <- NYDroughtD0[NYDroughtD0$ConsecutiveWeeks, ]
+
+# altering data format for easily legibility in R
+D0_NY$startD <- as.Date(D0_NY$StartDate,"%Y-%m-%d")
+# broken down by year
+D0_NY$Year <- year(D0_NY$StartDate)
+# broken down by DOY (more specific)
+D0_NY$DOY <- yday(D0_NY$StartDate)
+
+# leap year = true
+# will be used to run regression
+D0_NY$DD <- D0_NY$Year+ ((D0_NY$DOY - 1) / ifelse(leap_year(D0_NY$Year),366, 365))
+
+## Drought Threshold D0 for all NY County's - Abnormally Dry ##
+# plot the data using ggplot --> ggplot(x-axis, y-axis)
+ggplot(data = D0_NY, aes(x=startD,y=ConsecutiveWeeks))+# data for plot
+        geom_point()+ # make points at data point
+        labs(x="Date of Drought Experienced", y="# of Consecutive Weeks in Abnormally Dry across NY State")
+
+
+## setting up regression for Drought Threshold D0 ##
+# DDC, "c" stands for centering with year 2000 being 0
+D0_NY$DDC <- (D0_NY$DD - 2000)
+NYACD0.mod <- lm(D0_NY$ConsecutiveWeeks ~ D0_NY$DDC)
+
+# standardized residuals
+NYACD0.res <- rstandard(NYACD0.mod)
+
+## Checking Assumptions ##
+## NOTE: Assumptions -> residuals are normally distributed & equal variances ##
+# set up qq plot
+qqnorm(NYACD0.res)
+# add qq line
+qqline(NYACD0.res)
+
+# make residual plot
+## NO REAL PATTERNS/TRENDS = pass the equal variances test ##
+plot(D0_NY$DDC, NYACD0.res,
+     xlab = "Drought Threshold D0 - Abnormally Dry (ALL NY Counties)", 
+     ylab = "standardized residual")
+# add a horizontal line at zero
+abline(h=0)
+
+## Interpreting results ##
+summary(NYACD0.mod)
+
+# linear regression for drought threshold D0 and consecutive weeks of drought observed
+plot(D0_NY$DDC, D0_NY$ConsecutiveWeeks, 
+     pch = 19, 
+     col = "royalblue4",
+     ylab = "# of Consecutive Weeks in Abnormally Dry for All of NY",
+     xlab =  "Date of Drought Experienced (2000-2020)")
+# add regression line
+# make line width thicker
+abline(NYACD0.mod, lwd=2)
